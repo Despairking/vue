@@ -1,0 +1,9 @@
+<template>  
+    <div>
+弦是崩断即换的弦
+    </div>  
+</template>
+<script>
+</script>
+<style>
+</style>

@@ -1,0 +1,9 @@
+<template>  
+    <div>
+柱是顶天立地的柱：
+    </div>  
+</template>
+<script>
+</script>
+<style>
+</style>
