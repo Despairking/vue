@@ -31,16 +31,23 @@
           label="应用名称"
           width="180"
         >
-          <template slot-scope="scope">
-            <span
-              class="col-cont"
-              v-html="showDate(scope.row.applicationName)"
-            ></span>
-          </template>
+<template slot-scope="scope">
+      <span class="col-cont" v-html="showDate(scope.row.applicationName)" ></span>
+     </template>
         </el-table-column>
         <el-table-column prop="describe" label="备注" width="180">
         </el-table-column>
-        <el-table-column prop="applicationType" label="类型"> </el-table-column>
+        <el-table-column
+          prop="applicationType"
+          label="类型"
+          :filters="[
+            { text: 'Web', value: 'Web' },
+            { text: 'WeChat', value: 'WeChat' }
+          ]"
+          :filter-method="filterType"
+          filter-placement="bottom-end"
+        >
+        </el-table-column>
         <el-table-column prop="instant" label="唯一标识" width="150">
         </el-table-column>
         <el-table-column prop="ownerName" label="所有者"> </el-table-column>
@@ -84,56 +91,34 @@
       </div>
     </el-main>
     <el-dialog
-      title="编辑应用"
+      :title="titleNew"
       :visible.sync="dialogFormVisible"
       width="500px"
       top="200px"
     >
-      <el-form :model="form">
+      <el-form :model="form" ref="form">
         <el-form-item
-          prop="applicationName"
           label="名称"
           :label-width="formLabelWidth"
+          prop="applicationName"
         >
-          <el-input auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item
-          prop="instant"
-          label="唯一标识"
-          :label-width="formLabelWidth"
-        >
-          <el-input auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item
-          prop="applicationType"
-          label="类型"
-          :label-width="formLabelWidth"
-        >
-          <el-input auto-complete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleSet()">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog
-      title="新建应用"
-      :visible.sync="dialogCreateFormVisible"
-      width="500px"
-      top="200px"
-    >
-      <el-form :model="form" ref="form">
-        <el-form-item label="名称" :label-width="formLabelWidth" prop="applicationName">
           <el-input
             v-model="form.applicationName"
             auto-complete="off"
           ></el-input>
         </el-form-item>
-        <el-form-item label="唯一标识" :label-width="formLabelWidth" prop="instant">
+        <el-form-item
+          label="唯一标识"
+          :label-width="formLabelWidth"
+          prop="instant"
+        >
           <el-input v-model="form.instant" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="类型" :label-width="formLabelWidth" prop="applicationType"> 
+        <el-form-item
+          label="类型"
+          :label-width="formLabelWidth"
+          prop="applicationType"
+        >
           <el-input
             v-model="form.applicationType"
             auto-complete="off"
@@ -141,8 +126,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogCreateFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="createSet('form')">确 定</el-button>
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSet('form')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -160,23 +145,17 @@ export default {
       tableDataNew: [],
       length: 0,
       dialogFormVisible: false,
-      dialogCreateFormVisible: false,
       form: {
         applicationName: "",
         instant: "",
         applicationType: ""
       },
       formLabelWidth: "80px",
-      currentIndex: ""
+      currentIndex: "",
+      titleNew: ""
     };
   },
   methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
-    },
     changePage(page) {
       this.tableData = this.tableDataNew
         .map((item, index) => {
@@ -224,46 +203,43 @@ export default {
     },
     handleEdit(index, row) {
       this.dialogFormVisible = true;
+      this.titleNew = "编辑应用";
       this.form.applicationName = row.applicationName;
       this.form.instant = row.instant;
       this.form.applicationType = row.applicationType;
       this.currentIndex = index;
     },
     handleSet() {
-      var params = {
-        applicationName: this.form.applicationName,
-        instant: this.form.instant,
-        applicationType: this.form.applicationType
-      };
-      this.tableData[
-        this.currentIndex
-      ].applicationName = this.form.applicationName;
-      this.tableData[this.currentIndex].instant = this.form.instant;
-      this.tableData[
-        this.currentIndex
-      ].applicationType = this.form.applicationType;
-      this.dialogFormVisible = false;
+      if (this.titleNew == "新建应用") {
+        var params = {
+          applicationName: this.form.applicationName,
+          instant: this.form.instant,
+          applicationType: this.form.applicationType
+        };
+        this.tableDataNew.push(params);
+        this.tableData = this.tables;
+        this.length = this.tableDataNew.length;
+        this.$refs["form"].resetFields();
+        this.dialogFormVisible = false;
+      }
+
+      if (this.titleNew == "编辑应用") {
+        this.tableData[
+          this.currentIndex
+        ].applicationName = this.form.applicationName;
+        this.tableData[this.currentIndex].instant = this.form.instant;
+        this.tableData[
+          this.currentIndex
+        ].applicationType = this.form.applicationType;
+        this.dialogFormVisible = false;
+      }
     },
     createForm() {
-      this.dialogCreateFormVisible = true;
-    },
-    createSet() {
-      var params = {
-        applicationName: this.form.applicationName,
-        instant: this.form.instant,
-        applicationType: this.form.applicationType
-      };
-      this.tableDataNew.push(params);
-      this.tableData = this.tableDataNew.slice(0, 5).map((item, index) => {
-        return {
-          ...item,
-          number: index + 1
-        };
-      });
-      this.length = this.tableDataNew.length;
-      console.log(this.$refs["form"].resetFields);
-      this.$refs["form"].resetFields();
-      this.dialogCreateFormVisible = false;
+      this.dialogFormVisible = true;
+      this.titleNew = "新建应用";
+      this.form.applicationName = "";
+      this.form.instant = "";
+      this.form.applicationType = "";
     },
     searchEnterFun() {
       console.log(this.inputName);
@@ -275,33 +251,38 @@ export default {
             .includes(this.inputName.toLowerCase())
       );
     },
+    filterType(value, row) {
+      return row.applicationType === value;
+    },
     showDate(val) {
-      val = val + "";
-      if (val.indexOf(this.inputName) !== -1 && this.inputName !== "") {
-        return val.replace(
-          this.inputName,
-          '<font color="#409EFF">' + this.inputName + "</font>"
-        );
-      } else {
-        return val;
-      }
+    val = val + '应用';
+    if (val.indexOf(this.inputName) !== -1 && this.inputName !== '') {
+     return val.replace(this.inputName, '<font color="#409EFF">' + this.inputName + '</font>')
+    } else {
+     return val
     }
+   }
   },
   computed: {
     tables: function() {
-      var inputName = this.inputName;
-      if (inputName) {
-        return this.tableData.filter(function(dataNews) {
-          return Object.keys(dataNews).some(function(key) {
-            return (
-              String(dataNews[key])
-                .toLowerCase()
-                .indexOf(inputName) > -1
-            );
-          });
-        });
-      }
+      this.tableDataNew.slice(0, 5).map((item, index) => {
+        return {
+          ...item,
+          number: index + 1
+        };
+      });
       return this.tableData;
+    }
+  },
+  watch: {
+    inputName: function () {
+      this.tableData = this.tableData.filter(
+        data =>
+          !this.inputName ||
+          data.applicationName
+            .toLowerCase()
+            .includes(this.inputName.toLowerCase())
+      )
     }
   },
   created() {

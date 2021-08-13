@@ -29,10 +29,8 @@
               <h5><i class="el-icon-s-tools"> 系统管理</i></h5>
               <el-divider></el-divider>
               <el-menu
-                default-active="2"
+                default-active="1"
                 class="el-menu-vertical-demo"
-                @open="handleOpen"
-                @close="handleClose"
               >
                 <el-menu-item index="1">
                   <template slot="title">
@@ -50,9 +48,11 @@
                     ></span
                   >
                 </el-menu-item>
-                <el-menu-item index="3" disabled>
+                <el-menu-item index="3">
                   <i class="el-icon-document"></i>
-                  <span slot="title">导航三</span>
+                  <span slot="title"><router-link :to="'/navigation3'"
+                      >导航三</router-link
+                    ></span>
                 </el-menu-item>
                 <el-menu-item index="4">
                   <i class="el-icon-setting"></i>
@@ -188,5 +188,8 @@ a:-webkit-any-link {
   text-decoration-thickness: initial;
   text-decoration-style: initial;
   text-decoration-color: initial;
+}
+.el-icon-arrow-down:before {
+    content: "\e6df";
 }
 </style>

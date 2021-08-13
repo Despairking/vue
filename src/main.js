@@ -7,8 +7,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import VueRouter from 'vue-router'
 import table from './components/table.vue'
 import navigation2 from './components/navigation2.vue'
+import navigation3 from './components/navigation3.vue'
 import navigation4 from './components/navigation4.vue'
-
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);
@@ -26,6 +26,10 @@ let router1 = new VueRouter({
         {
             path: '/navigation2',
             component: navigation2
+        },
+        {
+            path: '/navigation3',
+            component: navigation3
         },
         {
             path: '/navigation4',
